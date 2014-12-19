@@ -1,0 +1,63 @@
+---
+title: "Statistical Inference Project, Part 1"
+author: "Devon Terrell"
+date: "Monday, December 15, 2014"
+output: html_document
+---
+
+## The Exponential Distribution
+```{r}
+# Constant values referenced throughout the report
+lambda <- 0.2
+n <- 40
+num_sims = 1000
+```
+
+Begin by exploring the exponential distribution itself, taking a sample of `r n ` elements from the Probability Density Function provided by R, `rexp`.  Note, the sample mean is indicated by the red line:
+
+```{r}
+sample_rexp <- rexp(n, lambda)
+hist(sample_rexp)
+mean_sample_rexp <- mean(sample_rexp)
+abline(v = mean_sample_rexp, col = "red", lwd = 2)
+```
+
+Property         | Value
+---------------- | ---------------- 
+Theoretical Mean | $\lambda ^{-1} =$ `r .2^-1 `
+Sample Mean      | `mean(sample_rexp)` $\approx$ `r mean(sample_rexp) `
+Theoretical Var  | $(\lambda ^{-1})^2 =$ `r .2^-2 `
+Sample Variance  | `var(sample_rexp)` $\approx$ `r var(sample_rexp) `
+
+Though fairly small, this sample estiamtes the theoretical mean and variance of the population.
+
+## Averages of Sample Means
+
+Repeating this process to calculate the mean value of 40 distinct sample populations forms its own random variable.
+
+```{r}
+mns = NULL
+for (i in 1 : num_sims) mns = c(mns, mean(rexp(n, lambda)))
+hist(mns)
+mns_mean = mean(mns)
+abline(v = mns_mean, col = "red", lwd = 2)
+```
+
+Property                 | Value
+------------------------ | ---------------- 
+Theoretical Mean of Avgs | $\lambda ^{-1} =$ `r .2^-1 `
+Sample Mean of Avgs      | `mean(mns)` $\approx$ `r mean(mns) `
+Theoretical Var of Avgs  | $\sigma ^2 / n = (\lambda ^{-1})^2 / 40 \approx$ `r (.2^-2)/n `
+Sample Var of Avgs       | `var(mns)` $\approx$ `r var(mns) `
+
+The distribution of sample means is centered around the red line, representing the *mean of the sample means*.  The value of this *mean of sample means*, `r mns_mean `, estimates the mean of the original distribution used for sampling, which is $\lambda ^{-1} =$ `r lambda^-1 `.
+
+Unlike the mean, however, the variance of the distribution of sample means differs from the original distribution used for sampling.  Instead, it is related to the variance of the original population and the number of samples taken in each simulation, as indicated in the table above, yielding a variance of `r var(mns) `.  
+
+The distribution of sample means forms an approximately normal distribution.  Consider a Gaussian distribution with the same variance and mean as the sample population, given by the equation $(2 \pi \sigma ^2)^{-1/2} * e^{-(x-\mu)^2/{2\sigma ^2}}$, which can be calcuated in R using the function `dnorm(x, mean=mu, sd=std)`.  By converting the values for each bin of the histogram to *probabilities* (normalizing the units of the histogram), the relationship becomes visually apparent.
+
+```{r}
+hist(mns, prob=TRUE)
+curve(dnorm(x, mean=mns_mean, sd=sqrt(var(mns))), col='blue', lwd=2, add=TRUE)
+```
+

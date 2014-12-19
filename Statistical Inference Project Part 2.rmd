@@ -1,0 +1,37 @@
+---
+title: "Statistical Inference Project Part 2"
+author: "Devon Terrell"
+date: "Thursday, December 18, 2014"
+output: html_document
+---
+
+## Exploring the ToothGrowth Dataset
+
+The ToothGrowth dataset consists of measurements of the lengths of teeth in 10 guinea pigs which were given varying doses of Vitamin C (0.5, 1.0, and 2.0 mg) using two different delivery mechanisms (orange juice and asorbic acid).
+
+```{r}
+tg <- ToothGrowth
+combined_mean <- mean(tg$len)
+combined_var <- var(tg$len)
+hist(tg$len, main = "Histogram of Tooth Length")
+abline(v = combined_mean, col = "red", lwd = 2)
+```
+
+Statistic | Value
+--------- | ------
+Mean      | `r combined_mean`
+Variance  | `r combined_var`
+
+## Separating Out Observation Classes
+
+The data consists of six classes of observations, one for each combination of dose and supplement type.  Each class has its own histogram of observed lengths and assoicated descriptive statistics.
+
+```{r}
+parted_data = split(tg, list(tg$supp, tg$dose))
+par(mfrow=c(2,3))
+silence <- mapply(function(c,i){hist(c$len, main = paste("Histogram of", i))}, parted_data, names(parted_data))
+```
+
+```{r}
+aggregate(tg$len, by=list(tg$supp, tg$dose), function(x){c(MU=mean(x), SD=sd(x))})
+```

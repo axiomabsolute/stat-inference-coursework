@@ -1,0 +1,230 @@
+---
+title: "Statistical Inference Notes"
+author: "Devon Terrell"
+date: "Tuesday, December 02, 2014"
+output: html_document
+---
+
+## Lecture 2: Probability
+
+### Rules of Probability
+
+* Probability of nothing occurring is 0
+* Probability of something occurring is 1
+* Probability of a single class of event, P(A), is 0 < P(A) < 1
+* Probability of the opposite of A, P(A') = 1 - P(A)
+* If A and B are disjoint classes of events, P(AuB) = P(A)+P(B)
+* Given two events (not necessarily disjoint) P(AuB) = P(A) + P(B) - P(AnB)
+* If event A implies B, then P(A) < P(B)
+
+### Probability Mass and Density Functions
+
+* A *Probability Mass Function (PMF)* is a function P on a discrete domain D such that:
+    - $\forall x \in D, P(x) > 0$
+    - $\forall x \in D, \sum x = 1$
+* A *Probability Density Function (PDF)* is a function P on a continuous domain D such that:
+    - $\forall x \in D, P(x) > 0$
+    - $\int\limits_D x = 1$
+  
+#### Example
+
+The following PDF gives the percentage of help-desk service phone calls answered in a day.
+
+```{r}
+x <- c(-0.5, 0, 1, 1, 1.5)
+y <- c(0,0,2,0,0)
+plot(x, y, lwd=3, frame=FALSE, type="l")
+```
+
+What is the probability that 75% of the calls get answered in a day?
+
+```{r}
+f <- function(x){return(2*x)} # Eqn of the line
+f(.75) * (.75 * .5) # 1/2 base times height
+
+# alternatively
+pbeta(0.75, 2, 1)
+```
+
+### Cumulative Distribution Function (CDF)
+
+* The *Cumulative Distribution Function* of a random variable, X, is the probability that the random variable is less than or equal to the value of x
+    * $F(x)=P(X\le x)$
+* The *Survival Function* iof a random variable, X, is the probability that the random variable is greater than the value of x
+    * $F(x)=P(X\gt x)=1-P(X\le x)$
+    
+#### Example
+
+What is the CDF and survival function from the density considered before?
+
+```{r}
+pbeta(c(0.4, 0.5, 0.6, 0.75), 2, 1) # pbeta is the CDF
+1-pbeta(c(0.4, 0.5, 0.6, 0.75), 2, 1) # 1-pbeta is the survival function
+```
+
+### Percentiles
+
+* Given a PDF, the $\alpha^{th}$ percentile is the value x such that a randomly drawn value has $\alpha \%$ probability of being less than or equal to it.
+
+### Example
+
+What is the 50th percentile
+
+$F(x)=P(X\le x)=\frac{1}{2} Base * Height=\frac{x}{2} * (2x) = x^2$
+Solve $F(x)=x^2=0.5$
+```{r}
+sqrt(0.5)
+
+# Alternatively
+qbeta(0.5, 2, 1)
+```
+
+### R Tricks
+
+* `p` in front of a density function, as in `pbeta`, gives the _probability_
+* `q` in front of a density function, as in `qbeta`, gives the _quantiles_
+
+## Lecture 3: Conditional Probability
+
+* Let $B$ be an event so that $P(B)>0$.  Then the *conditional probability* of an even $A$ given that $B$ has occured is $P(A|B)=\frac{P(A\cap B)}{P(B)}$
+
+### Bayes' Rule
+
+$P(B|A)=\frac{P(A|B)P(B)}{P(A|B)P(B)+P(A|B^c)P(B^c)}$
+
+### Odds
+
+The odds of a given even P occuring is $\frac{P}{1-P}$
+
+#### Example
+
+A fair die roll has a probability of $1/6$ of resulting in the number 1, and a probability of $5/6$ of [2,6].  So the odds are $\frac{1/6}{5/6}=\frac{1*6}{5*6}=1/5$, or $1:5$ odds.
+
+### Independence
+
+Two events A and B are independent if $P(A\cap B)=P(A)P(B)$ or alternatively if $P(A|B)=P(A)$
+
+Intuitively, what this is saying is that if two events are independent, then the probability of both occurring is just the probability of each occuring individually.  In the alternative definition, this is saying that the occurence of A given B is not influenced at all by B occurring.
+
+#### Example
+
+What is the probability of getting two consecutive heads on fair coin flips?
+
+* $A = \mbox{Head on flip 1} \rightarrow P(A)=.5$
+* $B = \mbox{Head on flip 2} \rightarrow P(B)=.5$
+* $A\cap B = \mbox{Head on flips 1 and 2}$
+* $P(A\cap B) = P(A)P(B) = .5 * .5 = .25$
+
+## Lecture 4: Expectations
+
+### Population Mean
+
+* Intuitively, where would you put the pivot point to balance the distribution?
+    * Applies for both continuous and discrete distributions
+* Analytically $E(X) = \sum\limits_{x} x*p(x)$
+
+### Sample Mean
+
+The mean of infinitely many samples from a population is the same as the population itself.
+
+### Average Mean
+
+A collection of _sample means_ from a _population_ is itself a random variable (with an associated distribution) which has the same mean as the population itself.
+
+#### Example: Average Sample Mean with Six-sided Die Rolls
+
+```{r}
+nsamples <- 100
+
+```
+
+```{r echo = FALSE}
+```
+
+## Lecture 5: Variance
+
+The *variance* of a random variable is a measure of spread.  Intuitively, it is a measure of how wide the distribution is.
+
+### Variance Defined
+
+If $X$ is a random variable with mean $\mu$ then the *variance of $X$* is defined as $Var(X)=E[(X-\mu)^2]=E[X^2] - E[X]^2$
+
+* In otherwords, the variance is the expected squared distance from the mean
+* Densities with higher variance are more spread out than those with lower
+* The square root of the variance is called the __standard deviation__
+* The standard deviation has the same units as $X$
+
+#### Example
+
+What is the variance of the result of a toss of a six sided die?
+
+Recall, $E[X]=\sum\limits_{i=1}^{n} i*\frac{1}{n}$ for a fair die, and so for a six sided die, $E[x]=3.5$.  Similarly, $E[X^2]=\sum\limits_{i=1}^{n} i^2 * \frac{1}{n}$ and so for a six sided die, $E[X^2]\approx 15.1666$.  Therefore, $var(X)=E[X^2]-E[X^2]\approx 15.1666 - (3.5^2)\approx 2.92$
+
+### Sample Variance
+
+The average squared distance of the observations minus the sample mean.
+
+$S^2=\frac{\sum\limits_{i-1} (X_i - X)^2}{n-1}$
+
+### Standard Deviation
+
+The standard deviation is the square root of the Sample Variance.
+
+### Variance distribution of sample means
+
+Recall that taking the average over multiple sample distributions of a probabilitiy yields a distribution that is centered at the _same_ value, the mean, but that it gets _thinner_ or more focused on the mean as more distributions are included in the average.  This relationship can be formalized.
+
+Let $\sigma$ be the variance of the original population.  Then the variance of the average of $n$ such populations is $Var(X) = \sigma ^2 / n$.  That is, as more samples are added, the variance approaches zero.  This is called the standard error? I think?
+
+### Summary
+
+* The standard deviation, $S$ talks about how variable the population is
+* The sample variance, $S^2$, estimates the population variance, $\sigma ^2$
+* The distribution of the _sample variance_ is centered around $\sigma ^2$
+* As more values are included in the sample vairance, the distribution of the sample variances becomes more focused around $\sigma ^2$
+* The variance of the sample mean is $\sigma ^2 /n$
+    - It's logical estimate is $s^2/n$
+    - The logical estimate of the standard error is $\sqrt{s^2/n}=S/\sqrt{n}$
+* The standard error, $S/\sqrt{n}$, talks about how variable averages of random samples of size $n$ from the population are.
+
+### Summary
+
+* The sample variance estimates the population variance
+* The distribution of the sample variance is centered at what it's estimating
+* The distribution of the sample variance gets more concentrated around the population variance with larger sample sizes
+* The variance of the sample mean is the population variance divided by $n$
+    - The square root is the standard error
+* We can say a lot about the distribution of averages from random samples, even though we only have one set of data.
+
+## Intuition - The Central Limit Theorem
+
+Conceptually, this graph reinforces the fact that a *sample mean estimates the population mean*.  In each simulation, a sampling of 40 draws individually estimates the distribution function used for the source of the draws, in this case the exponential distribution.  Each simulation, however, will not be an exact estimation, and so will have some notion of error associated with it, corresponding to draws that, due to the non-infinite nature of sampling, seem to contradict the original distribution function.  These "erroneous draws" result in a difference between the sample and population mean.  An imbalance of draws to the left of the mean causes the sample mean to be *lower*, while an imbalance of draws to the right causes the sample mean to be *higher*.
+
+The mean, by definition, has the interesting property of cutting the distribution exactly in half, regardless of the distribution involved.  While it might be more likely to draw from one side over the other, this property means that the total mass of the draws on either side of the mean (the weighted sum of outcome and frequency) should "balance out" over infinitely many samples.  By viewing our small set of finite samplings as subsequences within an infinite sequence of individual samples, it becomes clear that 
+
+## Cheat-Sheet
+
+Symbol   | Name             | Definition                    | R Func          | Intuition
+-------- | ---------------- | ----------------------------- | --------------- | -------
+$X$       | random variable | PDF/PMF, $P(x)$              | e.g. dnorm       | A variable represented by a probability distribution
+$x$       | sample          | $x \in X$                    | e.g. rnorm       | A single occurance of a value drawn from a distribution
+$cum(x)$  | cumulative prob | $F(x)=P(X \le x)$            | e.g. pnorm       | The probability of being "at least" some result
+$cum(x)'$ | quantile prob   | $F(x)=P(X \gt x)$            | e.g. qnorm       | The probability of being "greater than" some result
+$\mu$     | population mean | $\sum\limits_{x \in X} x/n$  | ~                | The center of the distribution
+$E[X]$    | expected value  | $\sum \limits_{x} (x*p(x))$  | ~                | The sum of the value of each result times the likelihood of each result (integral in continuous space).  Another term for the __population mean__
+$\bar{X}$ | sample mean     | $\sum\limits_{i=1}{n} x_i n$ | mean             | The center of mass of the sample data.  This is also known as the __arithmetic mean__ or __average__
+$Var(X)$  | Pop. Variance   | $E[X^2] - (E[X])^2$          | ~                | How concentrated the distribution is around the __population mean__.  "The mean of the square minus the square of the mean"
+$S^2$     | Sample Variance | $S^2=\frac{\sum\limits_{i=1} (X_i - \bar{X})^2}{n-1}$ | var | How concentrated the sample data is around the __sample mean__. _Almost_ the average squared distance from the sample mean.
+$sd$, $\sigma$ | Pop Standard Deviation | $\sqrt{E[X^2] - (E[X])^2}$ | ~ | Same idea as the population variance, but in the same units as the population
+$S$       | Sample Standard Deviation | $S=\sqrt{S^2}$ | sd | Same idea as the sample variance, but in the same units as the samples
+
+
+* The _sample mean_ estimates the _population mean_, and so the distribution of sample means is centered around the population mean
+* A collection of _sample means_ from a _population_ is itself a random variable (with an associated distribution) which has the same mean as the population itself
+* The more samples that go into the sample mean, the more concentrated it is around the population mean
+* The _sample variance_ estimates the _population variance_, and so the distribution of sample variances is centered around the population variance
+* The variance of sample means has a fixed relationship to the _standard deviation_ and the number of samples, given by $Var(\bar{X})=\sigma ^2/n$, where $n$ is the number of observations in the sample.  This is useful because we don't have to repeat sample means to get its variance; we know the relationship
+* The estimate of the variance of sample means is $S^2/n$
+* The estimate of the standard error is $S/\sqrt{n}$
+* The _standard deviation_ relates to how variable the population is.  The _standard error_ relates to how variables average samples of size $n$ from the population are
+* The _standard deviation_ of a sampling distribution of a statistic is called the _standard error_

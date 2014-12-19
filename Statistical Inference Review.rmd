@@ -1,0 +1,172 @@
+---
+title: "Statistical Inference Review"
+author: "Devon Terrell"
+date: "Thursday, December 11, 2014"
+output: html_document
+---
+## Lecture 2: Probability
+
+### Rules of Probability
+
+* Probability of nothing occurring is 0
+* Probability of something occurring is 1
+* Probability of a single class of event, P(A), is 0 < P(A) < 1
+* Probability of the opposite of A, P(A') = 1 - P(A)
+* If A and B are disjoint classes of events, P(AuB) = P(A)+P(B)
+* Given two events (not necessarily disjoint) P(AuB) = P(A) + P(B) - P(AnB)
+* If event A implies B, then P(A) < P(B)
+
+### Probability Mass and Density Functions
+
+* A *Probability Mass Function (PMF)* is a function P on a discrete domain D such that:
+    - $\forall x \in D, P(x) > 0$
+    - $\forall x \in D, \sum x = 1$
+* A *Probability Density Function (PDF)* is a function P on a continuous domain D such that:
+    - $\forall x \in D, P(x) > 0$
+    - $\int\limits_D x = 1$
+    
+### Cumulative Distribution Function (CDF)
+
+* The *Cumulative Distribution Function* of a random variable, X, is the probability that the random variable is less than or equal to the value of x
+    * $F(x)=P(X\le x)$
+* The *Survival Function* iof a random variable, X, is the probability that the random variable is greater than the value of x
+    * $F(x)=P(X\gt x)=1-P(X\le x)$
+    
+### Percentiles
+
+* Given a PDF, the $\alpha^{th}$ percentile is the value x such that a randomly drawn value has $\alpha \%$ probability of being less than or equal to it.
+
+## Lecture 3: Conditional Probability
+
+* Let $B$ be an event so that $P(B)>0$.  Then the *conditional probability* of an even $A$ given that $B$ has occured is $P(A|B)=\frac{P(A\cap B)}{P(B)}$
+
+### Bayes' Rule
+
+$P(B|A)=\frac{P(A|B)P(B)}{P(A|B)P(B)+P(A|B^c)P(B^c)}$
+
+### Odds
+
+The _odds_ of a given even P occuring is $\frac{P}{1-P}$
+
+### Independence
+
+Two events A and B are _independent_ if $P(A\cap B)=P(A)P(B)$ or alternatively if $P(A|B)=P(A)$
+
+Intuitively, what this is saying is that if two events are independent, then the probability of both occurring is just the probability of each occuring individually.  In the alternative definition, this is saying that the occurence of A given B is not influenced at all by B occurring.
+    
+## Lecture 4: Expectations
+
+Population
+
+:   A complete set of elements from which an observation can be made
+
+Sample
+
+:   A set of observations drawn from a population
+
+### Population Mean
+
+* Intuitively, where would you put the pivot point to balance the distribution?
+    * Applies for both continuous and discrete distributions
+* Analytically $E(X) = \sum\limits_{x} x*p(x)$
+
+### Sample Mean
+
+The mean of infinitely many samples from a population is the same as the population itself.
+
+### Average Mean
+
+The mean of infinitely many averages of samples from a population is the same as the population, but the distribution of averages will be more focused on the mean.
+
+## Lecture 5: Variance
+
+The *variance* of a random variable is a measure of spread.  Intuitively, it is a measure of how wide the distribution is.
+
+### Variance Defined
+
+If $X$ is a random variable with mean $\mu$ then the *variance of $X$* is defined as $Var(X)=E[(X-\mu)^2]=E[X^2] - E[X]^2$
+
+* In otherwords, the variance is the expected squared distance from the mean
+* Densities with higher variance are more spread out than those with lower
+* The square root of the variance is called the __standard deviation__
+* The standard deviation has the same units as $X$
+
+### Sample Variance
+
+The average squared distance of the observations minus the sample mean.
+
+$S^2=\frac{\sum\limits_{i-1} (X_i - X)^2}{n-1}$
+
+### Standard Deviation
+
+The standard deviation is the square root of the Sample Variance.
+
+### Variance distribution of sample means
+
+Recall that taking the average over multiple sample distributions of a probabilitiy yields a distribution that is centered at the _same_ value, the mean, but that it gets _thinner_ or more focused on the mean as more distributions are included in the average.  This relationship can be formalized.
+
+Let $\sigma$ be the variance of the original population.  Then the variance of the average of $n$ such populations is $Var(X) = \sigma ^2 / n$.  That is, as more samples are added, the variance approaches zero.  This is called the standard error? I think?    
+
+## Lecture 6: Common Distributions
+
+### The Bernoulli Distribution
+
+Distribution of a random variable with two possible outcomes, 1 or 0, with probabilities of $p$ and $1-p$ respectively
+
+Stat  | Value
+----- | ------------------------
+PMF   | $P(X = x)=p^x(1-p)^{1-x}$
+$\mu$ | $p$
+$Var$ | $p(1-p)$
+
+## Binomial Trials
+
+Sum of Indpendent and Identically Distributed (IID) Bernoulli trials, $X=\sum\limits_{i=1}^{n} X_i$
+
+Stat  | Value
+----- | ------------------------
+PMF   | $P(X = x)={n \choose x} p^x(1-p)^{n-x}=\frac{n!}{x!(n-x)!}p^x(1-p)^{n-x}$
+$\mu$ | $p$
+$Var$ | $p(1-p)$
+R func| `pbinom`
+
+## Normal Distribution
+
+A random variable said to follow a normal or Gaussian distribution associated with the density
+
+$(2\pi \sigma ^2)^{-1/2}e^{-(x-\mu)^2 / {2\sigma ^2}}$
+
+Stat  | Value
+----- | ------------------------
+PMF   | $(2\pi \sigma ^2)^{-1/2}e^{-(x-\mu)^2 / {2\sigma ^2}}$
+$\mu$ | $E[X]$
+$Var$ | $\sigma ^2$
+
+When $\mu = 0$ and $\sigma=1$ it's called the _standard normal distribution_
+
+## Cheat-Sheet
+
+Symbol   | Name             | Definition                    | R Func          | Intuition
+-------- | ---------------- | ----------------------------- | --------------- | -------
+$X$       | random variable | PDF/PMF, $P(X)$              | e.g.  dnorm      | A variable represented by a probability distribution
+$x$       | sample          | $x \in X$                    | e.g.  rnorm      | A single occurance of a value drawn from a distribution
+$cum(x)$  | cumulative prob | $F(x)=P(X \le x)$            | e.g.  pnorm      | The probability of being "at least" some result
+$cum(x)'$ | quantile prob   | $F(x)=P(X \gt x)$            | e.g.  qnorm      | The probability of being "greater than" some result
+$\mu$     | population mean | $\sum\limits_{x \in X} x/n$  | ~                | The center of the distribution
+$E[X]$    | expected value  | $\sum \limits_{x} (x*p(x))$  | ~                | The sum of the value of each result times the likelihood of each result (integral in continuous space).  Another term for the __population mean__
+$\bar{X}$ | sample mean     | $\sum\limits_{i=1}{n} x_i n$ | mean             | The center of mass of the sample data.  This is also known as the __arithmetic mean__ or __average__
+$Var(X)$  | Pop. Variance   | $E[X^2] - (E[X])^2$          | ~                | How concentrated the distribution is around the __population mean__.  "The mean of the square minus the square of the mean"
+$S^2$     | Sample Variance | $S^2=\frac{\sum\limits_{i=1} (X_i - \bar{X})^2}{n-1}$ | var | How concentrated the sample data is around the __sample mean__. _Almost_ the average squared distance from the sample mean.
+$sd$, $\sigma$ | Pop Standard Deviation | $\sqrt{E[X^2] - (E[X])^2}$ | ~ | Same idea as the population variance, but in the same units as the population
+$S$       | Sample Standard Deviation | $S=\sqrt{S^2}$ | sd | Same idea as the sample variance, but in the same units as the samples
+
+## Results
+* The _sample mean_ estimates the _population mean_, and so the distribution of sample means is centered around the population mean
+* A collection of _sample means_ from a _population_ is itself a random variable (with an associated distribution) which has the same mean as the population itself
+* The more samples that go into the sample mean, the more concentrated it is around the population mean
+* The _sample variance_ estimates the _population variance_, and so the distribution of sample variances is centered around the population variance
+* The variance of sample means has a fixed relationship to the _standard deviation_ and the number of samples, given by $Var(\bar{X})=\sigma ^2/n$, where $n$ is the number of observations in the sample.  This is useful because we don't have to repeat sample means to get its variance; we know the relationship
+* The estimate of the variance of sample means is $S^2/n$
+* The estimate of the standard error is $S/\sqrt{n}$
+* The _standard deviation_ relates to how variable the population is.  The _standard error_ relates to how variables average samples of size $n$ from the population are
+* The _standard deviation_ of a sampling distribution of a statistic is called the _standard error_
